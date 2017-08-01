@@ -1,5 +1,4 @@
-DEMO DATASET setup
-==================
+# DEMO DATASET setup
 
 Table of Contents
 -----------------
@@ -8,8 +7,10 @@ Table of Contents
     * [Install ClickHouse](#install-clickhouse)
     * [Configure ClickHouse](#configure-clickhouse)
 
-Preparation
------------
+------
+
+
+## Preparation
 
 Ensure we have all `apt` - related tools installed
 ```bash
@@ -43,8 +44,7 @@ Update list of available packages
 sudo apt update
 ```
 
-Install and configure ClickHouse
---------------------------------
+## Install and configure ClickHouse
 
 ### Install ClickHouse
 
@@ -102,7 +102,7 @@ Ensure `<dictionaries_config>` tag has the following content:
 <dictionaries_config>/etc/clickhouse-server/dicts/*.xml</dictionaries_config>
 ```
 
-### Setup users
+#### Setup users
 
 Setup access for default user from localhost only.\
 Edit file `/etc/clickhouse-server/users.xml`\
@@ -158,6 +158,8 @@ Add new `<testuser>` tag with profile referring to just inserted `readonly_set_s
 </testuser>
 ```
 
+#### Setup Dictionaries
+
 Prepare dictionaries specifications.\
 We’ll need **SSH** access to ‘etalon dataset server’, which is `209.170.140.239`
 
@@ -193,7 +195,7 @@ Ensure ClickHouse server is running
 sudo service clickhouse-server restart
 ```
 
-### SSH-tunnel setup
+## SSH-tunnel setup
 
 Also we need to have ClickHouse to have access to ‘etalon dataset server’. Since it is behind the firewall, we need to setup SSH-tunnel for this. \
 Make local socket `127.0.0.1:9999` to be forwarded on server `209.170.140.239` to local socket `127.0.0.1:9000` on that server. \
@@ -295,6 +297,8 @@ clickhouse-client -q "CREATE TABLE nyc_taxi_rides.tripdata (
 ) ENGINE = MergeTree(pickup_date, (id, pickup_location_id, dropoff_location_id, vendor_id), 8192);"
 ```
 
+### Copy Dataset
+
 Fill newly created tables with data from remote ‘etalon dataset server’
 
 **IMPORTANT:** This operation requires big amount of data to be copied and takes quite long time
@@ -315,13 +319,18 @@ clickhouse-client -q "SELECT count() FROM nyc_taxi_rides.taxi_zones;"
 clickhouse-client -q "SELECT count() FROM nyc_taxi_rides.tripdata;"
 ```
 
+### Check Dataset
+
 Ensure all dictionaries are healthy via
 
 ```bash
 clickhouse-client -q "SELECT * FROM system.dictionaries;"
 ```
 
-There should be two dictionaries and no errors reported on their statuses \
+There should be two dictionaries and no errors reported on their statuses 
+
+## Close SSH-tunnel
+
 Now let’s terminate SSH-tunnel to ‘etalon data server’
 
 Find `SSH`-tunnel process `PID`
