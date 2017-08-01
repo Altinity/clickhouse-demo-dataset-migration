@@ -1,12 +1,21 @@
 # DEMO DATASET setup
 
+------
+
 Table of Contents
------------------
   * [Preparation](#preparation)
   * [Install and Configure ClickHouse](#install-and-configure-clickhouse)
-    * [Install ClickHouse](#install-clickhouse)
+    * [Install ClickHouse](#install-clickhouse)Vy
     * [Configure ClickHouse](#configure-clickhouse)
-
+      * [Setup Users](#setup-users)
+      * [Setup Dictionaries](#setup-dictionaries)
+  * [SSH-tunnel setup](#ssh-tunnel-setup)
+  * [Dataset setup](#dataset-setup)
+      * [Databases Setup](#databases-setup)
+      * [Tables Setup](#tables-setup)
+      * [Copy Dataset](#copy-dataset)
+      * [Check Dataset](#check-dataset)
+  * [Close SSH-tunnel](#close-ssh-tunnel)
 ------
 
 
