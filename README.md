@@ -11,11 +11,22 @@
       * [Setup Users](#setup-users)
       * [Setup Dictionaries](#setup-dictionaries)
   * [SSH-tunnel setup](#ssh-tunnel-setup)
-  * [Dataset setup](#dataset-setup)
-      * [Databases Setup](#databases-setup)
-      * [Tables Setup](#tables-setup)
-      * [Copy Dataset](#copy-dataset)
-      * [Check Dataset](#check-dataset)
+  * [Datasets setup](#datasets-setup)
+    * [Dataset NYC Taxi Rides](#Dataset-NYC-Taxi-Rides)
+      * [Setup NYC Taxi Rides Database](#Setup-NYC-Taxi-Rides-Database)
+      * [Setup NYC Taxi Rides Tables](#Setup-NYC-Taxi-Rides-Tables)
+      * [Copy NYC Dataset](#Copy-NYC-Dataset)
+      * [Check NYC Dataset](#Check-NYC-Dataset)
+    * [Dataset STAR](#Dataset-STAR)
+      * [Setup STAR Database](#Setup-STAR-Database)
+      * [Setup STAR Tables](#Setup-STAR-Tables)
+      * [Copy STAR Dataset](#Copy-STAR-Dataset)
+      * [Check STAR Dataset](#Check-STAR-Dataset)
+    * [Dataset AIRLINE](#Dataset-AIRLINE)
+      * [Setup AIRLINE Database](#Setup-AIRLINE-Database)
+      * [Setup AIRLINE Tables](#Setup-AIRLINE-Tables)
+      * [Copy AIRLINE Dataset](#Copy-AIRLINE-Dataset)
+      * [Check AIRLINE Dataset](#Check-AIRLINE-Dataset)
   * [Close SSH-tunnel](#close-ssh-tunnel)
 
 ------
@@ -113,7 +124,7 @@ Ensure `<dictionaries_config>` tag has the following content:
 <dictionaries_config>/etc/clickhouse-server/dicts/*.xml</dictionaries_config>
 ```
 
-#### Setup users
+#### Setup Users
 
 Setup access for default user from localhost only.\
 Edit file `/etc/clickhouse-server/users.xml`\
@@ -216,7 +227,7 @@ Thus, connecting to `127.0.0.1:9999` we’ll have connect via **SSH** to `127.0.
 ssh -f -N -i ~/.ssh/chdemo -p 2222 root@209.170.140.239 -L 127.0.0.1:9999:127.0.0.1:9000
 ```
 
-## Dataset setup
+## Datasets setup
 
 Now let’s setup demo datasets
 
