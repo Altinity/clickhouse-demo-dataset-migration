@@ -2,10 +2,11 @@
 
 ------
 
-Table of Contents
+## Table of Contents
+
   * [Preparation](#preparation)
   * [Install and Configure ClickHouse](#install-and-configure-clickhouse)
-    * [Install ClickHouse](#install-clickhouse)Vy
+    * [Install ClickHouse](#install-clickhouse)
     * [Configure ClickHouse](#configure-clickhouse)
       * [Setup Users](#setup-users)
       * [Setup Dictionaries](#setup-dictionaries)
@@ -16,6 +17,7 @@ Table of Contents
       * [Copy Dataset](#copy-dataset)
       * [Check Dataset](#check-dataset)
   * [Close SSH-tunnel](#close-ssh-tunnel)
+
 ------
 
 
@@ -216,49 +218,32 @@ ssh -f -N -i ~/.ssh/chdemo -p 2222 root@209.170.140.239 -L 127.0.0.1:9999:127.0.
 
 ## Dataset setup
 
-Now let’s setup tables and demo dataset
+Now let’s setup demo datasets
 
-### Databases setup
-Create databases we’ll use
+### Dataset NYC Taxi Rides
+
+Now let’s setup New-York City Taxi Rides dataset
+
+#### Setup NYC Taxi Rides Database
+Create database we’ll use
 
 ```bash
-clickhouse-client -q "CREATE DATABASE IF NOT EXISTS star;"
 clickhouse-client -q "CREATE DATABASE IF NOT EXISTS nyc_taxi_rides;"
 ```
+
+#### Setup NYC Taxi Rides Tables
 
 Drop existing tables if they already exist
 
 ```bash
-clickhouse-client -q "DROP TABLE IF EXISTS star.starexp;"
 clickhouse-client -q "DROP TABLE IF EXISTS nyc_taxi_rides.central_park_weather_observations;"
 clickhouse-client -q "DROP TABLE IF EXISTS nyc_taxi_rides.taxi_zones;"
 clickhouse-client -q "DROP TABLE IF EXISTS nyc_taxi_rides.tripdata;"
 ```
 
-### Tables setup
-
 Create tables we’ll use
-```bash
-clickhouse-client -q "CREATE TABLE star.starexp (
-  antiNucleus UInt32,
-  eventFile UInt32,  
-  eventNumber UInt32,
-  eventTime Float64,
-  histFile UInt32,
-  multiplicity UInt32,
-  NaboveLb UInt32,
-  NbelowLb UInt32,
-  NLb UInt32,
-  primaryTracks UInt32,
-  prodTime Float64,
-  Pt Float32,
-  runNumber UInt32,
-  vertexX Float32,
-  vertexY Float32,
-  vertexZ Float32,
-  eventDate Date DEFAULT  CAST(concat(substring(toString(floor(eventTime)), 1, 4), '-', substring(toString(floor(eventTime)), 5, 2), '-', substring(toString(floor(eventTime)), 7, 2)) AS Date)
-) ENGINE = MergeTree(eventDate, (eventNumber, eventTime, runNumber, eventFile, multiplicity), 8192);"
 
+```bash
 clickhouse-client -q "CREATE TABLE nyc_taxi_rides.central_park_weather_observations (
   station_id String,  
   station_name String,  
@@ -306,29 +291,27 @@ clickhouse-client -q "CREATE TABLE nyc_taxi_rides.tripdata (
 ) ENGINE = MergeTree(pickup_date, (id, pickup_location_id, dropoff_location_id, vendor_id), 8192);"
 ```
 
-### Copy Dataset
+#### Copy NYC Dataset
 
 Fill newly created tables with data from remote ‘etalon dataset server’
 
 **IMPORTANT:** This operation requires big amount of data to be copied and takes quite long time
 
 ```bash
-clickhouse-client -q "INSERT INTO star.starexp SELECT * FROM remote('127.0.0.1:9999', 'star.starexp');"
 clickhouse-client -q "INSERT INTO nyc_taxi_rides.central_park_weather_observations SELECT * FROM remote('127.0.0.1:9999', 'nyc_taxi_rides.central_park_weather_observations');"
 clickhouse-client -q "INSERT INTO nyc_taxi_rides.taxi_zones SELECT * FROM remote('127.0.0.1:9999', 'nyc_taxi_rides.taxi_zones');"
 clickhouse-client -q "INSERT INTO nyc_taxi_rides.tripdata SELECT * FROM remote('127.0.0.1:9999', 'nyc_taxi_rides.tripdata');"
 ```
 
-After all data copied ensure we have main tables filled with dataset:
+#### Check NYC Dataset
+
+After all data copied ensure we have main tables filled with data:
 
 ```bash
-clickhouse-client -q "SELECT count() FROM star.starexp;"
 clickhouse-client -q "SELECT count() FROM nyc_taxi_rides.central_park_weather_observations;"
 clickhouse-client -q "SELECT count() FROM nyc_taxi_rides.taxi_zones;"
 clickhouse-client -q "SELECT count() FROM nyc_taxi_rides.tripdata;"
 ```
-
-### Check Dataset
 
 Ensure all dictionaries are healthy via
 
@@ -337,6 +320,74 @@ clickhouse-client -q "SELECT * FROM system.dictionaries;"
 ```
 
 There should be two dictionaries and no errors reported on their statuses 
+
+### Dataset STAR
+
+Now let’s setup Star Observations dataset
+
+#### Setup STAR Database
+
+Create database we’ll use
+
+```bash
+clickhouse-client -q "CREATE DATABASE IF NOT EXISTS star;"
+```
+
+#### Setup STAR Tables
+
+Drop existing tables if they already exist
+
+```bash
+clickhouse-client -q "DROP TABLE IF EXISTS star.starexp;"
+```
+
+Create tables we’ll use
+
+```bash
+clickhouse-client -q "CREATE TABLE star.starexp (
+  antiNucleus UInt32,
+  eventFile UInt32,  
+  eventNumber UInt32,
+  eventTime Float64,
+  histFile UInt32,
+  multiplicity UInt32,
+  NaboveLb UInt32,
+  NbelowLb UInt32,
+  NLb UInt32,
+  primaryTracks UInt32,
+  prodTime Float64,
+  Pt Float32,
+  runNumber UInt32,
+  vertexX Float32,
+  vertexY Float32,
+  vertexZ Float32,
+  eventDate Date DEFAULT  CAST(concat(substring(toString(floor(eventTime)), 1, 4), '-', substring(toString(floor(eventTime)), 5, 2), '-', substring(toString(floor(eventTime)), 7, 2)) AS Date)
+) ENGINE = MergeTree(eventDate, (eventNumber, eventTime, runNumber, eventFile, multiplicity), 8192);"
+```
+
+#### Copy STAR Dataset
+
+Fill newly created tables with data from remote ‘etalon dataset server’
+
+**IMPORTANT:** This operation requires big amount of data to be copied and takes quite long time
+
+```bash
+clickhouse-client -q "INSERT INTO star.starexp SELECT * FROM remote('127.0.0.1:9999', 'star.starexp');"
+```
+
+#### Check STAR Dataset
+
+After all data copied ensure we have main tables filled with data:
+
+```bash
+clickhouse-client -q "SELECT count() FROM star.starexp;"
+```
+
+### Dataset AIRLINE
+#### Setup AIRLINE Databases
+#### Setup AIRLINE Tables
+#### Copy AIRLINE Dataset
+#### Check AIRLINE Dataset
 
 ## Close SSH-tunnel
 
