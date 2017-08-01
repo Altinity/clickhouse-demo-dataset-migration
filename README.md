@@ -15,14 +15,14 @@
     * [Dataset NYC Taxi Rides](#dataset-nyc-taxi-rides)
       * [Setup NYC Taxi Rides Database](#setup-nyc-taxi-rides-database)
       * [Setup NYC Taxi Rides Tables](#setup-nyc-taxi-rides-tables)
-      * [Copy NYC Dataset](#copy-nyc-dataset)
-      * [Check NYC Dataset](#check-nyc-dataset)
-    * [Dataset STAR](#Dataset-STAR)
+      * [Copy NYC Taxi Rides Dataset](#copy-nyc-taxi-rides-dataset)
+      * [Check NYC Taxi Rides Dataset](#check-nyc-taxi-rides-dataset)
+    * [Dataset STAR](#dataset-star)
       * [Setup STAR Database](#setup-star-database)
       * [Setup STAR Tables](#setup-star-tables)
       * [Copy STAR Dataset](#copy-star-dataset)
       * [Check STAR Dataset](#check-star-dataset)
-    * [Dataset AIRLINE](#Dataset-AIRLINE)
+    * [Dataset AIRLINE](#dataset-airline)
       * [Setup AIRLINE Database](#setup-airline-database)
       * [Setup AIRLINE Tables](#setup-airline-tables)
       * [Copy AIRLINE Dataset](#copy-airline-dataset)
@@ -302,7 +302,7 @@ clickhouse-client -q "CREATE TABLE nyc_taxi_rides.tripdata (
 ) ENGINE = MergeTree(pickup_date, (id, pickup_location_id, dropoff_location_id, vendor_id), 8192);"
 ```
 
-#### Copy NYC Dataset
+#### Copy NYC Taxi Rides Dataset
 
 Fill newly created tables with data from remote ‘etalon dataset server’
 
@@ -314,7 +314,7 @@ clickhouse-client -q "INSERT INTO nyc_taxi_rides.taxi_zones SELECT * FROM remote
 clickhouse-client -q "INSERT INTO nyc_taxi_rides.tripdata SELECT * FROM remote('127.0.0.1:9999', 'nyc_taxi_rides.tripdata');"
 ```
 
-#### Check NYC Dataset
+#### Check NYC Taxi Rides Dataset
 
 After all data copied ensure we have main tables filled with data:
 
