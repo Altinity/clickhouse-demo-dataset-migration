@@ -396,7 +396,7 @@ clickhouse-client -q "SELECT count() FROM star.starexp;"
 
 ### Dataset AIRLINE
 
-Now let’s setup New-York City Taxi Rides dataset
+Now let’s setup AIRLINE dataset
 
 #### Setup AIRLINE Database
 
