@@ -36,8 +36,10 @@ Update list of available packages
 sudo apt update
 ```
 
-Install ClickHouse
-------------------
+Install and configure ClickHouse
+--------------------------------
+
+###Install ClickHouse
 
 Install all ClickHouse-related packages: server, client & tools
 ```bash
@@ -45,7 +47,6 @@ sudo apt install clickhouse-client 'clickhouse-server*'
 ```
 
 Now let’s setup installed ClickHouse
-
 Ensure service is down
 ```bash
 sudo service clickhouse-server stop
@@ -64,15 +65,10 @@ sudo mkdir -p /etc/clickhouse-server/dicts
 sudo chown -R clickhouse.clickhouse /etc/clickhouse-server/dicts
 ```
 
-
-###Configuration edit
-=====================
-
+###Configure ClickHouse
 
 Setup ClickHouse to listen on all network interfaces for both IPv4 and IPv6
-
 Edit file `/etc/clickhouse-server/config.xml`
-
 Ensure `<listen_host>` tags have the following content:
 
 
@@ -82,34 +78,28 @@ Ensure `<listen_host>` tags have the following content:
 ```
 
 Setup ClickHouse to keep data in specified dirs - in case default /var/lib/clickhouse is not OK
-
 Edit file `/etc/clickhouse-server/config.xml`
-
 Ensure `<path>` and `<tmp_path>` tags have the following content:
 
 ```xml
-<!-- Path to data directory, with trailing slash. -->
-        <path>/data1/clickhouse/</path>
-        <!-- Path to temporary data for processing hard queries. -->
-        <tmp_path>/data1/clickhouse/tmp/</tmp_path>
+	<!-- Path to data directory, with trailing slash. -->
+	<path>/data1/clickhouse/</path>
+	<!-- Path to temporary data for processing hard queries. -->
+	<tmp_path>/data1/clickhouse/tmp/</tmp_path>
 ```
 Setup ClickHouse to look for dictionaries in specified dir
-
 Edit file `/etc/clickhouse-server/config.xml`
-
 Ensure `<dictionaries_config>` tag has the following content:
 
 ```xml
 <dictionaries_config>/etc/clickhouse-server/dicts/*.xml</dictionaries_config>
 ```
 
-Setup users
+###Setup users
 
 Setup access for default user from localhost only.
-
 Edit file `/etc/clickhouse-server/users.xml`
-
-Ensure default user (located inside `<yandex><users><default>`) has `<ip>` tags specified with localhost values only
+Ensure `default` user (located inside `<yandex><users><default>`) has `<ip>` tags specified with localhost values only
 
 ```xml
 <default>
@@ -121,11 +111,8 @@ Ensure default user (located inside `<yandex><users><default>`) has `<ip>` tags 
 ```
 
 Setup read-only user for ClickHouse with access from all over the world.
-
 Username would be testuser and it would not have any password.
-
 Edit file `/etc/clickhouse-server/users.xml`
-
 
 Add new profile called `readonly_set_settings` in `<yandex><profiles>` section right after `<default>` profile tag
 ```xml
@@ -165,8 +152,7 @@ Add new `<testuser>` tag with profile referring to just inserted `readonly_set_s
 ```
 
 Prepare dictionaries specifications.
-
-We’ll need SSH access to ‘etalon dataset server’, which is `209.170.140.239`
+We’ll need **SSH** access to ‘etalon dataset server’, which is `209.170.140.239`
 
 Store ssh-access key locally
 ```bash
@@ -175,7 +161,6 @@ touch ~/.ssh/chdemo
 ```
 
 Edit `~/.ssh/chdemo` and save key in it
-
 Also it has to have limited access rights
 ```bash
 chmod 600 ~/.ssh/chdemo
@@ -200,16 +185,21 @@ Ensure ClickHouse server is running
 sudo service clickhouse-server restart
 ```
 
+###SSH-tunnel setup
+
 Also we need to have ClickHouse to have access to ‘etalon dataset server’. Since it is behind the firewall, we need to setup SSH-tunnel for this. 
-Make local socket 127.0.0.1:9999 to be forwarded on server 209.170.140.239 to local socket 127.0.0.1:9000 on that server. 
-Thus, connecting to 127.0.0.1:9999 we’ll have connect via SSH to 127.0.0.1:9000 on server 209.170.140.239
+Make local socket `127.0.0.1:9999` to be forwarded on server `209.170.140.239` to local socket `127.0.0.1:9000` on that server. 
+Thus, connecting to `127.0.0.1:9999` we’ll have connect via **SSH** to `127.0.0.1:9000` on server `209.170.140.239`
 ```bash
 ssh -f -N -i ~/.ssh/chdemo -p 2222 root@209.170.140.239 -L 127.0.0.1:9999:127.0.0.1:9000
 ```
 
+##Dataset setup
+
 Now let’s setup tables and demo dataset
 
-Create two databases we’ll use
+###Databases setup
+Create databases we’ll use
 ```bash
 clickhouse-client -q "CREATE DATABASE IF NOT EXISTS star;"
 clickhouse-client -q "CREATE DATABASE IF NOT EXISTS nyc_taxi_rides;"
@@ -223,7 +213,9 @@ clickhouse-client -q "DROP TABLE IF EXISTS nyc_taxi_rides.taxi_zones;"
 clickhouse-client -q "DROP TABLE IF EXISTS nyc_taxi_rides.tripdata;"
 ```
 
-Create four tables we’ll use
+###Tables setup
+
+Create tables we’ll use
 ```bash
 clickhouse-client -q "CREATE TABLE star.starexp (
   antiNucleus UInt32,
@@ -292,8 +284,8 @@ clickhouse-client -q "CREATE TABLE nyc_taxi_rides.tripdata (
 ) ENGINE = MergeTree(pickup_date, (id, pickup_location_id, dropoff_location_id, vendor_id), 8192);"
 ```
 
-Fill newly created tables with data from remote ‘etalon dataset server’\
-\
+Fill newly created tables with data from remote ‘etalon dataset server’
+
 **IMPORTANT:** This operation requires big amount of data to be copied and takes quite long time
 
 ```bash
@@ -318,13 +310,13 @@ clickhouse-client -q "SELECT * FROM system.dictionaries;"
 There should be two dictionaries and no errors reported on their statuses
 Now let’s terminate SSH-tunnel to ‘etalon data server’
 
-Find SSH-tunnel process PID
+Find `SSH`-tunnel process `PID`
 ```bash
 SSHPID=`sudo netstat -antp|grep LIST|grep 9999|grep ssh|awk '{print $7}'| sed -e 's/\/.*//g'`
 echo $SSHPID
 ```
 
-Ensure found SSH PID is reasonable - it is our SSH-tunnel
+Ensure found `SSH` `PID` is reasonable - it is our `SSH`-tunnel
 ```bash
 ps ax | grep $SSHPID | grep -v grep
 ```
