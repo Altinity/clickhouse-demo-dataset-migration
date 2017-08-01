@@ -2,7 +2,7 @@ DEMO DATASET setup
 ==================
 
 Preparation
-===========
+-----------
 
 Ensure we have all `apt` - related tools installed
 ```bash
@@ -36,7 +36,10 @@ Update list of available packages
 sudo apt update
 ```
 
-Install all ClickHouse-related packages
+Install ClickHouse
+------------------
+
+Install all ClickHouse-related packages: server, client & tools
 ```bash
 sudo apt install clickhouse-client 'clickhouse-server*'
 ```
