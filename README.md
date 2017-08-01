@@ -1,6 +1,10 @@
-DEMO DATASET setup
+#DEMO DATASET setup
+===================
 
-Ensure we have all apt - related tools installed
+##Preparation
+=============
+
+Ensure we have all `apt` - related tools installed
 ```bash
 sudo apt install software-properties-common
 ```
@@ -10,7 +14,7 @@ Include keyserver for repo
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4
 ```
 
-Figure out Ubuntu codename
+Figure out disto codename
 ```bash
 codename=`lsb_release -c|awk '{print $2}'`
 echo $codename
@@ -22,7 +26,7 @@ REPOURL="http://repo.yandex.ru/clickhouse/$codename"
 echo $REPOURL
 ```
 
-Add ClickHouse repo located in $REPOURL
+Add ClickHouse repo located in `$REPOURL`
 ```bash
 sudo apt-add-repository "deb $REPOURL stable main"
 ```
@@ -44,7 +48,7 @@ Ensure service is down
 sudo service clickhouse-server stop
 ```
 
-Create folder where ClickHouse data would be kept. Default is /var/lib/clickhouse, if it is ok, just skip this section
+Create folder where ClickHouse data would be kept. Default is `/var/lib/clickhouse`, if it is ok, just skip this section
 ```bash
 sudo mkdir -p /data1/clickhouse
 sudo mkdir -p /data1/clickhouse/tmp
@@ -58,7 +62,8 @@ sudo chown -R clickhouse.clickhouse /etc/clickhouse-server/dicts
 ```
 
 
-Configuration edit.
+###Configuration edit
+=====================
 
 
 Setup ClickHouse to listen on all network interfaces for both IPv4 and IPv6
@@ -105,10 +110,10 @@ Ensure default user (located inside `<yandex><users><default>`) has `<ip>` tags 
 
 ```xml
 <default>
-                <networks incl="networks" replace="replace">
-                    <ip>::1</ip>
-                    <ip>127.0.0.1</ip>
-                </networks>
+	<networks incl="networks" replace="replace">
+		<ip>::1</ip>
+		<ip>127.0.0.1</ip>
+	</networks>
 </default>
 ```
 
@@ -121,44 +126,44 @@ Edit file `/etc/clickhouse-server/users.xml`
 
 Add new profile called `readonly_set_settings` in `<yandex><profiles>` section right after `<default>` profile tag
 ```xml
-            <!-- Profile that allows only read queries and SET settings. -->
-            <readonly_set_settings>
-                <!-- Maximum memory usage for processing single query, in bytes. -->
-                <max_memory_usage>10000000000</max_memory_usage>
+<!-- Profile that allows only read queries and SET settings. -->
+<readonly_set_settings>
+	<!-- Maximum memory usage for processing single query, in bytes. -->
+	<max_memory_usage>10000000000</max_memory_usage>
 
-                <!-- Use cache of uncompressed blocks of data. Meaningful only for processing many of very short queries. -->
-                <use_uncompressed_cache>0</use_uncompressed_cache>
+	<!-- Use cache of uncompressed blocks of data. Meaningful only for processing many of very short queries. -->
+	<use_uncompressed_cache>0</use_uncompressed_cache>
 
-                <!-- How to choose between replicas during distributed query processing.
-                     random - choose random replica from set of replicas with minimum number of errors
-                     nearest_hostname - from set of replicas with minimum number of errors, choose replica
-                      with minumum number of different symbols between replica's hostname and local hostname
-                      (Hamming distance).
-                     in_order - first live replica is choosen in specified order.
-                -->
-                <load_balancing>random</load_balancing>
-                <readonly>2</readonly>
-            </readonly_set_settings>
+	<!-- How to choose between replicas during distributed query processing.
+	random - choose random replica from set of replicas with minimum number of errors
+	nearest_hostname - from set of replicas with minimum number of errors, choose replica
+	with minumum number of different symbols between replica's hostname and local hostname
+	(Hamming distance).
+	in_order - first live replica is choosen in specified order.
+	-->
+	<load_balancing>random</load_balancing>
+	<readonly>2</readonly>
+</readonly_set_settings>
 ```
 
 Add new `<testuser>` tag with profile referring to just inserted `readonly_set_settings` profile in `<yandex><users>` section right after `<default>` user tag:
 
 ```xml
-           <testuser>
-                <password></password>
-                <networks incl="networks" replace="replace">
-                    <!-- access from everywhere -->
-                    <ip>::/0</ip>
-                    <ip>0.0.0.0</ip>
-                </networks>
-                <profile>readonly_set_settings</profile>
-                <quota>default</quota>
-            </testuser>
+<testuser>
+	<password></password>
+	<networks incl="networks" replace="replace">
+		<!-- access from everywhere -->
+		<ip>::/0</ip>
+		<ip>0.0.0.0</ip>
+	</networks>
+	<profile>readonly_set_settings</profile>
+	<quota>default</quota>
+</testuser>
 ```
 
 Prepare dictionaries specifications.
 
-We’ll need SSH access to ‘etalon dataset server’, which is 209.170.140.239
+We’ll need SSH access to ‘etalon dataset server’, which is `209.170.140.239`
 
 Store ssh-access key locally
 ```bash
@@ -284,8 +289,9 @@ clickhouse-client -q "CREATE TABLE nyc_taxi_rides.tripdata (
 ) ENGINE = MergeTree(pickup_date, (id, pickup_location_id, dropoff_location_id, vendor_id), 8192);"
 ```
 
-Fill newly created tables with data from remote ‘etalon dataset server’
-IMPORTANT: This operation requires big amount of data to be copied and takes quite long time
+Fill newly created tables with data from remote ‘etalon dataset server’\
+\
+**IMPORTANT:** This operation requires big amount of data to be copied and takes quite long time
 
 ```bash
 clickhouse-client -q "INSERT INTO star.starexp SELECT * FROM remote('127.0.0.1:9999', 'star.starexp');"
