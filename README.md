@@ -1,8 +1,8 @@
-#DEMO DATASET setup
-===================
+DEMO DATASET setup
+==================
 
-##Preparation
-=============
+Preparation
+===========
 
 Ensure we have all `apt` - related tools installed
 ```bash
