@@ -1,6 +1,13 @@
 DEMO DATASET setup
 ==================
 
+Table of Contents
+-----------------
+  * [Preparation](#preparation)
+  * [Install and Configure ClickHouse](#install-and-configure-clickhouse)
+    * [Install ClickHouse](#install-clickhouse)
+    * [Configure ClickHouse](#configure-clickhouse)
+
 Preparation
 -----------
 
