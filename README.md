@@ -36,7 +36,7 @@
 ## Introduction
 
 All instructions in this manual were tested on Ubuntu 16.04.
-There is not need to setup all datasets from this manual - or skip any of them, if you don't need it.
+There is no need to setup all datasets from this manual - feel free to skip any of them, if you don't need it.
 SSH-tunnel section is provided because 'etalon dataset server' is located behid firewall, but you may not need this actions.
 
 ## Preparation
