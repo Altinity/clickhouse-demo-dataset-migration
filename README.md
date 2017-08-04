@@ -6,6 +6,8 @@
 
   * [Introduction](#introduction)
   * [Preparation](#preparation)
+    * [Prepare ClickHouse Repo](#prepare-clickhouse-repo)
+    * [Prepare Etalon Dataset Server Access](#prepare-etalon-dataset-server-access)
   * [Install and Configure ClickHouse](#install-and-configure-clickhouse)
     * [Install ClickHouse](#install-clickhouse)
     * [Configure ClickHouse](#configure-clickhouse)
@@ -41,6 +43,8 @@ SSH-tunnel section is provided because 'etalon dataset server' is located behind
 
 ## Preparation
 
+### Prepare ClickHouse Repo
+
 Ensure we have all `apt` - related tools installed
 ```bash
 sudo apt install software-properties-common
@@ -71,6 +75,34 @@ sudo apt-add-repository "deb $REPOURL stable main"
 Update list of available packages
 ```bash
 sudo apt update
+```
+
+### Prepare Etalon Dataset Server Access
+
+You'll need to prepare: 
+  * hostname or IP address of the 'etalon dataset server' 
+  * access key in order to get SSH-access to 'etalon dataset server'
+
+Replace 127.0.0.1 with your 'etalon dataset server' address/hostname
+
+```bash
+DATASET_SERVER="127.0.0.1" # replace 127.0.0.1 with your 'etalon dataset server' address/hostname
+```
+
+Ensure you have access key in your `~/.ssh/` folder
+
+```bash
+ls -l ~/.ssh/
+...
+-rw-------  1 user user 1675 Aug  2 11:55 chdemo
+...
+
+```
+
+Specify acess key filename as ENV variable
+
+```bash
+DATASET_SERVER_KEY_FILENAME="chdemo" # replace "chdemo" with your 'etalon dataset server' address key filename
 ```
 
 ## Install and configure ClickHouse
@@ -558,7 +590,7 @@ clickhouse-client -q "SELECT count() FROM airline.ontime;"
 
 ## Close SSH-tunnel
 
-Now let’s terminate SSH-tunnel to ‘etalon data server’
+Now let’s terminate SSH-tunnel to ‘etalon dataset server’
 
 Find `SSH`-tunnel process `PID`
 ```bash
