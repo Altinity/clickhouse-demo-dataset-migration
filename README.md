@@ -118,7 +118,7 @@ Specify acess key filename as ENV variable
 
 ```bash
 # replace "chdemo" with your 'etalon dataset server' address key filename
-DATASET_SERVER_KEY_FILENAME="chdemo" 
+DATASET_SERVER_KEY_FILENAME="~/.ssh/chdemo" 
 ```
 
 ## Install and configure ClickHouse
@@ -238,25 +238,12 @@ Add new `<testuser>` tag with profile referring to just inserted `readonly_set_s
 #### Setup Dictionaries
 
 Prepare dictionaries specifications.\
-We’ll need **SSH** access to ‘etalon dataset server’, which is `209.170.140.239`
-
-Store ssh-access key locally
-```bash
-mkdir -p ~/.ssh
-touch ~/.ssh/chdemo
-```
-
-Edit `~/.ssh/chdemo` and save key in it\
-Also it has to have limited access rights
-```bash
-chmod 600 ~/.ssh/chdemo
-```
-
+We’ll need **SSH** access to ‘etalon dataset server’.\
 Copy dictionaries specifications from ‘etalon dataset server’ to `/etc/clickhouse-server/dicts`
 
 ```bash
 cd /etc/clickhouse-server/dicts
-sudo scp -i ~/.ssh/chdemo -P 2222 "root@209.170.140.239:/etc/clickhouse-server/dicts/*" .
+sudo scp -i $DATASET_SERVER_KEY_FILENAME -P 2222 "root@$DATASET_SERVER:/etc/clickhouse-server/dicts/*" .
 ```
 
 Ensure we have the following files in `/etc/clickhouse-server/dicts`
@@ -275,11 +262,11 @@ sudo service clickhouse-server restart
 ## SSH-tunnel setup
 
 Also we need to have ClickHouse to have access to ‘etalon dataset server’. Since it is behind the firewall, we need to setup SSH-tunnel for this. \
-Make local socket `127.0.0.1:9999` to be forwarded on server `209.170.140.239` to local socket `127.0.0.1:9000` on that server. \
-Thus, connecting to `127.0.0.1:9999` we’ll have connect via **SSH** to `127.0.0.1:9000` on server `209.170.140.239`
+Make local socket `127.0.0.1:9999` to be forwarded on server `$DATASET_SERVER` to local socket `127.0.0.1:9000` on that server. \
+Thus, connecting to `127.0.0.1:9999` we’ll have connect via **SSH** to `127.0.0.1:9000` on server `$DATASET_SERVER`
 
 ```bash
-ssh -f -N -i ~/.ssh/chdemo -p 2222 root@209.170.140.239 -L 127.0.0.1:9999:127.0.0.1:9000
+ssh -f -N -i $DATASET_SERVER_KEY_FILENAME -p 2222 root@$DATASET_SERVER -L 127.0.0.1:9999:127.0.0.1:9000
 ```
 
 ## Datasets setup
