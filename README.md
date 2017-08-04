@@ -86,10 +86,11 @@ You'll need to prepare:
 Replace 127.0.0.1 with your 'etalon dataset server' address/hostname
 
 ```bash
-DATASET_SERVER="127.0.0.1" # replace 127.0.0.1 with your 'etalon dataset server' address/hostname
+# replace 127.0.0.1 with your 'etalon dataset server' address/hostname
+DATASET_SERVER="127.0.0.1" 
 ```
 
-Ensure you have access key in your `~/.ssh/` folder
+Ensure you either already have access key in your `~/.ssh/` folder
 
 ```bash
 ls -l ~/.ssh/
@@ -99,10 +100,25 @@ ls -l ~/.ssh/
 
 ```
 
+or, if you don't have access key, create access key file and store ssh-access key locally
+
+
+```bash
+mkdir -p ~/.ssh
+touch ~/.ssh/chdemo
+```
+
+Edit `~/.ssh/chdemo` and save key in it\
+Also it has to have limited access rights
+```bash
+chmod 600 ~/.ssh/chdemo
+```
+
 Specify acess key filename as ENV variable
 
 ```bash
-DATASET_SERVER_KEY_FILENAME="chdemo" # replace "chdemo" with your 'etalon dataset server' address key filename
+# replace "chdemo" with your 'etalon dataset server' address key filename
+DATASET_SERVER_KEY_FILENAME="chdemo" 
 ```
 
 ## Install and configure ClickHouse
