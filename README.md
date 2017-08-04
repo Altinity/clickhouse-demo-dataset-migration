@@ -6,6 +6,8 @@
 
   * [Introduction](#introduction)
   * [Preparation](#preparation)
+    * [Prepare ClickHouse Repo](#prepare-clickhouse-repo)
+    * [Prepare Etalon Dataset Server Access](#prepare-etalon-dataset-server-access)
   * [Install and Configure ClickHouse](#install-and-configure-clickhouse)
     * [Install ClickHouse](#install-clickhouse)
     * [Configure ClickHouse](#configure-clickhouse)
@@ -41,6 +43,8 @@ SSH-tunnel section is provided because 'etalon dataset server' is located behind
 
 ## Preparation
 
+### Prepare ClickHouse Repo
+
 Ensure we have all `apt` - related tools installed
 ```bash
 sudo apt install software-properties-common
@@ -71,6 +75,52 @@ sudo apt-add-repository "deb $REPOURL stable main"
 Update list of available packages
 ```bash
 sudo apt update
+```
+
+### Prepare Etalon Dataset Server Access
+
+You'll need to prepare: 
+  * hostname or IP address of the 'etalon dataset server' 
+  * access key in order to get SSH-access to 'etalon dataset server'
+
+Replace 127.0.0.1 with your 'etalon dataset server' address/hostname
+
+```bash
+# replace 127.0.0.1 with your 'etalon dataset server' address/hostname
+DATASET_SERVER="127.0.0.1" 
+```
+
+Ensure you either already have access key in your `~/.ssh/` folder
+
+```bash
+ls -l ~/.ssh/
+...
+-rw-------  1 user user 1675 Aug  2 11:55 chdemo
+...
+
+```
+
+or, if you don't have access key, create access key file and store ssh-access key locally
+
+
+```bash
+mkdir -p ~/.ssh
+touch ~/.ssh/chdemo
+```
+
+Edit `~/.ssh/chdemo` and save key in it\
+Also it has to have limited access rights
+```bash
+chmod 600 ~/.ssh/chdemo
+```
+
+Specify **FULL PATH** to acess key file as ENV variable.\
+**IMPORTANT** - please, do not use shortcuts like `~/.ssh/chdemo` - specify real **FULL PATH**. Shortcuts will lead to mess when expanding it in sub-shell's.\
+**PLEASE** - full path only.
+
+```bash
+# replace "chdemo" with your FULL PATH to your 'etalon dataset server' access key file
+DATASET_SERVER_KEY_FILENAME="/home/user/.ssh/chdemo" 
 ```
 
 ## Install and configure ClickHouse
@@ -190,25 +240,12 @@ Add new `<testuser>` tag with profile referring to just inserted `readonly_set_s
 #### Setup Dictionaries
 
 Prepare dictionaries specifications.\
-We’ll need **SSH** access to ‘etalon dataset server’, which is `209.170.140.239`
-
-Store ssh-access key locally
-```bash
-mkdir -p ~/.ssh
-touch ~/.ssh/chdemo
-```
-
-Edit `~/.ssh/chdemo` and save key in it\
-Also it has to have limited access rights
-```bash
-chmod 600 ~/.ssh/chdemo
-```
-
+We’ll need **SSH** access to ‘etalon dataset server’.\
 Copy dictionaries specifications from ‘etalon dataset server’ to `/etc/clickhouse-server/dicts`
 
 ```bash
 cd /etc/clickhouse-server/dicts
-sudo scp -i ~/.ssh/chdemo -P 2222 "root@209.170.140.239:/etc/clickhouse-server/dicts/*" .
+sudo scp -i $DATASET_SERVER_KEY_FILENAME -P 2222 "root@$DATASET_SERVER:/etc/clickhouse-server/dicts/*" .
 ```
 
 Ensure we have the following files in `/etc/clickhouse-server/dicts`
@@ -227,11 +264,11 @@ sudo service clickhouse-server restart
 ## SSH-tunnel setup
 
 Also we need to have ClickHouse to have access to ‘etalon dataset server’. Since it is behind the firewall, we need to setup SSH-tunnel for this. \
-Make local socket `127.0.0.1:9999` to be forwarded on server `209.170.140.239` to local socket `127.0.0.1:9000` on that server. \
-Thus, connecting to `127.0.0.1:9999` we’ll have connect via **SSH** to `127.0.0.1:9000` on server `209.170.140.239`
+Make local socket `127.0.0.1:9999` to be forwarded on server `$DATASET_SERVER` to local socket `127.0.0.1:9000` on that server. \
+Thus, connecting to `127.0.0.1:9999` we’ll have connect via **SSH** to `127.0.0.1:9000` on server `$DATASET_SERVER`
 
 ```bash
-ssh -f -N -i ~/.ssh/chdemo -p 2222 root@209.170.140.239 -L 127.0.0.1:9999:127.0.0.1:9000
+ssh -f -N -i $DATASET_SERVER_KEY_FILENAME -p 2222 root@$DATASET_SERVER -L 127.0.0.1:9999:127.0.0.1:9000
 ```
 
 ## Datasets setup
@@ -558,7 +595,7 @@ clickhouse-client -q "SELECT count() FROM airline.ontime;"
 
 ## Close SSH-tunnel
 
-Now let’s terminate SSH-tunnel to ‘etalon data server’
+Now let’s terminate SSH-tunnel to ‘etalon dataset server’
 
 Find `SSH`-tunnel process `PID`
 ```bash
