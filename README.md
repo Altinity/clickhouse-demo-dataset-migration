@@ -114,11 +114,13 @@ Also it has to have limited access rights
 chmod 600 ~/.ssh/chdemo
 ```
 
-Specify acess key filename as ENV variable
+Specify **FULL PATH** to acess key file as ENV variable.\
+**IMPORTANT** - please, do not use shortcuts like `~/.ssh/chdemo` - specify real **FULL PATH**. Shortcuts will lead to mess when expanding it in sub-shell's.\
+**PLEASE** - full path only.
 
 ```bash
-# replace "chdemo" with your 'etalon dataset server' address key filename
-DATASET_SERVER_KEY_FILENAME="~/.ssh/chdemo" 
+# replace "chdemo" with your FULL PATH to your 'etalon dataset server' access key file
+DATASET_SERVER_KEY_FILENAME="/home/user/.ssh/chdemo" 
 ```
 
 ## Install and configure ClickHouse
