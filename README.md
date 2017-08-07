@@ -31,6 +31,7 @@
       * [Copy AIRLINE Dataset](#copy-airline-dataset)
       * [Check AIRLINE Dataset](#check-airline-dataset)
   * [Close SSH-tunnel](#close-ssh-tunnel)
+  * [Conclusion](#conclusion)
 
 ------
 
@@ -612,4 +613,8 @@ and kill it with kill command
 ```bash
 kill $SSHPID
 ```
+
+## Conclusion
+
+In case all steps were completed successfully, we'll have local copy of one (or more) datasets migrated from 'etalon dataset server'
 
